@@ -14,7 +14,14 @@ create options to use different kinds of databases
 create a better GUI
 
 Installation
-install folder contains requirements and install file
+run the bash script install.sh
+may have to change permissions for the file
+chmod +x install.sh
+
+./install.sh venv        start virtual environment
+./install.sh install     install dependencies
+./install.sh clean       clean to remove venv and other temporary files
+./install.sh build       build the application
 
 
 Usage
