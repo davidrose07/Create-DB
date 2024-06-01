@@ -2,9 +2,9 @@
 
 from PyQt5 import QtCore
 from PyQt5.QtWidgets import QFileDialog
-from src.view import Ui_MainWindow
+from view import Ui_MainWindow
 from PyQt5.QtWidgets import QMainWindow, QTableWidgetItem
-from src.db import DB
+from db import DB
 import sys
 
 QtCore.QCoreApplication.setAttribute(QtCore.Qt.AA_EnableHighDpiScaling, True)

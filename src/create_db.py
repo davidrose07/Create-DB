@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 
-from src.controller import *
+from controller import *
 from PyQt5.QtWidgets import QApplication
 import sys, argparse
 
