@@ -6,6 +6,13 @@ import sys, argparse
 
 
 def main(file_path, show_ui, browse) -> None:
+    '''
+    Main Function to start the application. uses parsed arguements to handle bash script or run directly from python with command line arguements
+
+    :param: file_path - file to convert
+    :param: show_ui -   options to display the user interface or use command line
+    :param: browse -    option to use file explorer to find a file    
+    '''
             
     if show_ui:
         application = QApplication([sys.argv])

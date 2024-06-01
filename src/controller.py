@@ -10,8 +10,17 @@ import sys
 QtCore.QCoreApplication.setAttribute(QtCore.Qt.AA_EnableHighDpiScaling, True)
 QtCore.QCoreApplication.setAttribute(QtCore.Qt.AA_UseHighDpiPixmaps, True)
 
-class Controller(QMainWindow, Ui_MainWindow):    
+class Controller(QMainWindow, Ui_MainWindow):
+    '''
+    Main Application : Controller Class    
+    '''    
     def __init__(self, file=None, show_ui=False, browse=False) -> None:
+        '''
+        Init Function: setup the ui and handle options
+        :param: file - the file to convert
+        :param: show_ui - options to display the user interface or use command line
+        :param: browse - option to use file explorer to find a file
+        '''
         super().__init__()
         self.setupUi(self)
         self.file = file
@@ -35,7 +44,11 @@ class Controller(QMainWindow, Ui_MainWindow):
         else:
             self.print_readout()
 
-    def print_readout(self):
+    def print_readout(self) -> None:
+        '''
+        Function: print readout of the schema in the command line in colored format
+        
+        '''
         table_color = '34'  # Blue
         column_color = '32'  # Green
         type_color = '33'  # Yellow
@@ -49,10 +62,22 @@ class Controller(QMainWindow, Ui_MainWindow):
                 print(f'{column_name}{column_type}')
         sys.exit(0)
 
-    def colored_text(self, text, color_code):
-        return f"\033[{color_code}m{text}\033[0m"
+    def colored_text(self, text, color_code) -> str:
+        '''
+        Function: returns a colored formated text
+        :param: text - the text to color
+        :param: color_code - the color of the text
+        :return: str of the formatted text        
+        '''
 
-    def displaySchema(self):
+        formatted_text = f"\033[{color_code}m{text}\033[0m"
+        return formatted_text
+
+    def displaySchema(self) -> None:
+        '''
+        Function: displays the schema in the tablewidget for the user interface        
+        '''
+
         schema_info = self.db.get_schema()
         
         self.schemaTableWidget.setColumnCount(3)
@@ -67,7 +92,11 @@ class Controller(QMainWindow, Ui_MainWindow):
                 self.schemaTableWidget.setItem(row, 2, QTableWidgetItem(column[1]))
                 row += 1
 
-    def setupTable(self):
+    def setupTable(self) -> None:
+        '''
+        Function: retrieves data from the database and displays it in the tablewidget for the user interface        
+        '''
+
         data = self.db.read_db()
         column_names = [description[0] for description in self.db.cursor.description]
         

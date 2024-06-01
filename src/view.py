@@ -3,6 +3,9 @@ from PyQt5 import QtCore, QtGui, QtWidgets
 
 
 class Ui_MainWindow(object):
+    '''
+    UI Class : main window - converted ui file to .py file
+    '''
     def setupUi(self, MainWindow):
         MainWindow.setObjectName("MainWindow")
         MainWindow.resize(834, 716)
