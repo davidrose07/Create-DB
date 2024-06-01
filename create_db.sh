@@ -35,18 +35,21 @@ done
 
 #Handle options
 if $UI && $BROWSE; then
-  OPTIONS="create_db.py -ui -b"
+  OPTIONS="src/create_db.py -ui -b"
 elif $UI && [ -n "$FILE" ]; then
-  OPTIONS="create_db.py -ui $FILE"
+  OPTIONS="src/create_db.py -ui $FILE"
 elif $UI; then
-  OPTIONS="create_db.py -ui"
+  OPTIONS="src/create_db.py -ui"
 elif $BROWSE; then
-  OPTIONS="create_db.py -b"
+  OPTIONS="src/create_db.py -b"
 elif [ -n "$FILE" ]; then
 # Get the directory of the input file
   input_dir=$(dirname "$FILE")
   $FILE="$input_dir/$FILE"
-  OPTIONS="create_db.py -f $FILE"
+  OPTIONS="src/create_db.py -f $FILE"
+else
+  echo "No valid options provided. Use -h for help."
+  exit 1
 fi
 
 # Add your file conversion logic here
