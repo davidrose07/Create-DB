@@ -54,6 +54,7 @@ case "$1" in
     install)
         create_venv
         install_dependencies
+        set_project_home
         ;;
     clean)
         clean_up

@@ -32,21 +32,26 @@ while getopts ":uibf:h" opt; do
   esac
 done
 
+# Ensure PROJECT_HOME is set
+if [ -z "$PROJECT_HOME" ]; then
+  echo "PROJECT_HOME is not set. Please run the install script first."
+  exit 1
+fi
 
 #Handle options
 if $UI && $BROWSE; then
-  OPTIONS="src/create_db.py -ui -b"
+  OPTIONS="$PROJECT_HOME/src/create_db.py -ui -b"
 elif $UI && [ -n "$FILE" ]; then
-  OPTIONS="src/create_db.py -ui $FILE"
+  OPTIONS="$PROJECT_HOME/src/create_db.py -ui $FILE"
 elif $UI; then
-  OPTIONS="src/create_db.py -ui"
+  OPTIONS="$PROJECT_HOME/src/create_db.py -ui"
 elif $BROWSE; then
-  OPTIONS="src/create_db.py -b"
+  OPTIONS="$PROJECT_HOME/src/create_db.py -b"
 elif [ -n "$FILE" ]; then
 # Get the directory of the input file
   input_dir=$(dirname "$FILE")
   $FILE="$input_dir/$FILE"
-  OPTIONS="src/create_db.py -f $FILE"
+  OPTIONS="$PROJECT_HOME/src/create_db.py -f $FILE"
 else
   echo "No valid options provided. Use -h for help."
   exit 1
