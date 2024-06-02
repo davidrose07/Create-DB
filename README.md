@@ -1,6 +1,9 @@
 # Create-DB
 Python project to convert different files to a database
 
+Python Version
+3.10.12
+
 Files in the Project
 create_db.py: Main Python script for file conversion.
 create_db.sh: Shell script for command-line usage.
