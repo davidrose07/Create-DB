@@ -43,6 +43,12 @@ determine_bin_dir() {
     fi
 }
 
+# Function to set the PROJECT_HOME environment variable
+set_project_home() {
+    echo "export PROJECT_HOME=$(pwd)" >> ~/.bashrc
+    source ~/.bashrc
+}
+
 # Check command line arguments
 case "$1" in
     install)
