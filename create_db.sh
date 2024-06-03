@@ -42,7 +42,7 @@ fi
 if $UI && $BROWSE; then
   OPTIONS="$PROJECT_HOME/src/create_db.py -ui -b"
 elif $UI && [ -n "$FILE" ]; then
-  OPTIONS="$PROJECT_HOME/src/create_db.py -ui $FILE"
+  OPTIONS="$PROJECT_HOME/src/create_db.py -ui -f $FILE"
 elif $UI; then
   OPTIONS="$PROJECT_HOME/src/create_db.py -ui"
 elif $BROWSE; then
@@ -59,4 +59,5 @@ fi
 
 # Add your file conversion logic here
 echo "Converting file: $FILE"
-python3 $OPTIONS
+echo "python3 $OPTIONS"
+#python3 $OPTIONS

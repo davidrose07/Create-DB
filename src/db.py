@@ -2,6 +2,8 @@ import pandas as pd
 import sqlite3
 from sqlalchemy import create_engine
 import os,sys
+import json
+from pandas import json_normalize
 
 
 class DB:
@@ -62,7 +64,8 @@ class DB:
         '''
         connection_string = f'sqlite:///{self.db_file}'
         engine = create_engine(connection_string)
-        self.df.to_sql(self.table_name, con=engine, if_exists='replace', index=False)
+        print(f'Make table:  ' ,self.df.to_sql(self.table_name, con=engine, if_exists='replace', index=False))
+        
 
     def xml_to_sql(self) -> None:
         '''
@@ -97,16 +100,62 @@ class DB:
         except Exception as e:
             print(f'Exception in xcel_to_sql: {e}')
 
+    def unpack_json(self, data, parent_key='', sep='.'):
+        """
+        Recursively unpack a nested JSON object.
+
+        :param: data - The JSON object (as a dictionary) to unpack.
+        :param: parent_key - The base key string for the current level of recursion.
+        :param: sep -  The separator between keys for nested objects.
+        :return: A dictionary with flattened keys.
+        """
+        temp_data = set()
+        temp_values = []
+
+        if isinstance(data, dict):
+            for keys in data.keys():
+                parent_key = keys  # Table name or multiple table names
+                for items in data[parent_key]:
+                    if isinstance(items, dict):
+                        row = {}
+                        for k, v in items.items():
+                            temp_data.add(k)
+                            row[k] = v
+                        temp_values.append(row)
+                self.table_name = parent_key
+                columns = list(temp_data)
+                rows = temp_values  # Ensure rows have values corresponding to columns
+                return pd.DataFrame(rows, columns=columns)
+        else:
+            try:
+                self.df = pd.read_json(self.file)
+                self.make_table()
+                print('Database creation successful!')
+            except Exception as e:
+                print(f'Exception in json_to_sql: {e}')
+            
+    
     def json_to_sql(self) -> None:
         '''
         Function: convert a json file to db
         '''
         try:
-            self.df = pd.read_json(self.file)
-            self.make_table()
-            print('Database creation successful!')
+            with open(self.file, 'r') as f:
+                json_data = json.load(f)
+            
+            unpacked_data = self.unpack_json(json_data)
+
+            self.df= pd.json_normalize(unpacked_data)
+            for item in self.df.items():
+                print(item)
+                        
+        except json.JSONDecodeError as e:
+            print(f'JSON decode error: {e}')
+        except FileNotFoundError as e:
+            print(f'File not found: {e}')
         except Exception as e:
             print(f'Exception in json_to_sql: {e}')
+       
 
     def sql(self) -> None:
         '''
