@@ -31,7 +31,8 @@ class Controller(QMainWindow, Ui_MainWindow):
             filename, _ = QFileDialog.getOpenFileName(self, 'Browse File', "/home", "csv files(*.csv);;json Files(*.json);;xml files(*.xml);;excel files(*.xlsx);;Sql Files(*.sql))", options=self.options)
             if filename:
                 self.file =filename
-        if self.file != None:       
+        if self.file != None:  
+            print(f'self.db uses : {self.file}')
             self.db = DB(self.file)
         else:
             print('Program requires a file name\npython3 create_db.py <filename>\n-help or --help to display options')
