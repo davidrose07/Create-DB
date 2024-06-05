@@ -42,6 +42,7 @@ class Controller(QMainWindow, Ui_MainWindow):
             self.show()
             self.setupTable()
             self.displaySchema()
+            self.print_readout()
         else:
             self.print_readout()
 
@@ -56,11 +57,22 @@ class Controller(QMainWindow, Ui_MainWindow):
 
         schema_info = self.db.get_schema()
         for table,columns in schema_info.items():
-            print(self.colored_text(f'Table: {table}', table_color))
+            print(self.colored_text(f'Table: {table}: schema', table_color))
             for column in columns:
                 column_name = self.colored_text(f'\tColumn: {column[0]:<20}', column_color)
                 column_type = self.colored_text(f'\tType: {column[1]:<20}',type_color)
                 print(f'{column_name}{column_type}')
+
+        data = self.db.read_db()
+        column_names = [self.colored_text(description[0], column_color) for description in self.db.cursor.description]
+
+        print(f'\n\n')
+        print(self.colored_text('*' * 56, table_color))
+        print("\t".join(column_names))
+
+        for row in data:
+            print(self.colored_text("\t".join(map(str, row)), type_color))
+
         sys.exit(0)
 
     def colored_text(self, text, color_code) -> str:

@@ -139,7 +139,7 @@ class DB:
 
             unpacked_data = self.unpack_json(json_data)
             self.df = pd.DataFrame(unpacked_data)
-            print(self.df)
+            
 
             self.make_table()
         except json.JSONDecodeError as e:
@@ -172,7 +172,7 @@ class DB:
         self.cursor.execute(f'SELECT * FROM {self.table_name}')
         rows = self.cursor.fetchall()
         return rows
-
+    
     def get_schema(self) -> dict:
         '''
         Function: Query the schema details from the db and return dictionary results
