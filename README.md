@@ -12,7 +12,7 @@ db.py: Handles database interactions.
 view.py: Manages the GUI components.
 
 TODO:
-create an installer file
+test installer file on different distros
 create options to use different kinds of databases
 create a better GUI
 
@@ -21,7 +21,6 @@ run the bash script install.sh
 may have to change permissions for the file
 chmod +x install.sh
 
-./install.sh venv        start virtual environment
 ./install.sh install     install dependencies
 ./install.sh clean       clean to remove venv and other temporary files
 ./install.sh build       build the application
@@ -38,8 +37,8 @@ Run the shell script with the desired options:
 
 
 Examples:
-./create_db.sh -b -ui
-./create_db.sh -f <path_to_file> -ui
+./create_db.sh -b -ui 
+./create_db.sh -ui -f <path_to_file> 
 ./create_db.sh -f <path_to_file>
 
 
@@ -48,7 +47,7 @@ Run the Python script with the desired options:
 
 -ui or --ui: Display the user interface.
 -b or --b: Browse for a file.
-file_path: The path to the file to be processed.
+-f: The path to the file to be processed.
 
 
 Examples:
