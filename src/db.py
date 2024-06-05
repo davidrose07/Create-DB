@@ -41,6 +41,33 @@ class DB:
         else:
             print(f'Unsupported file type: {self.file_path}')
 
+    def make_sql_file(self, output_file='your_data.sql'):
+        
+        self.cursor.execute("SELECT name FROM sqlite_master WHERE type='table';")
+        tables = self.cursor.fetchall()
+        table_names = [table[0] for table in tables]
+
+        with open(output_file, 'w') as file:
+            for table in table_names:
+                self.cursor.execute(f"SELECT sql FROM sqlite_master WHERE type='table' AND name='{table}'")
+                create_table_statement = self.cursor.fetchone()[0]
+                file.write(f"{create_table_statement};\n\n")
+                
+                self.cursor.execute(f"PRAGMA table_info({table})")
+                columns_info = self.cursor.fetchall()
+                column_names = [col[1] for col in columns_info]
+                column_list = ", ".join(column_names)
+
+                self.cursor.execute(f"SELECT * FROM {table}")
+                rows = self.cursor.fetchall()
+                
+                for row in rows:
+                    values_list = ", ".join([f"'{str(value)}'" if value is not None else 'NULL' for value in row])
+                    insert_statement = f"INSERT INTO {table} ({column_list}) VALUES ({values_list});\n"
+                    file.write(insert_statement)
+        
+        print(f"Data has been exported to {output_file}")
+
     def determine_file_type(self) -> str:
         '''
         Function: determine the file type to convert by splitting the extension and iterating through a dictionary

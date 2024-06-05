@@ -45,7 +45,7 @@ class Controller(QMainWindow, Ui_MainWindow):
             self.print_readout()
         else:
             self.print_readout()
-
+            
     def print_readout(self) -> None:
         '''
         Function: print readout of the schema in the command line in colored format
@@ -73,6 +73,7 @@ class Controller(QMainWindow, Ui_MainWindow):
         for row in data:
             print(self.colored_text("\t".join(map(str, row)), type_color))
 
+        self.db.make_sql_file()
         sys.exit(0)
 
     def colored_text(self, text, color_code) -> str:
