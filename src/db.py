@@ -41,14 +41,39 @@ class DB:
         else:
             print(f'Unsupported file type: {self.file_path}')
 
+    def searchdb(self, text) -> list:
+        '''
+        Function: query database with the text provided. It searches all columns for the text provided and returns results
+        :param: text - string of hte search parameters
+        :return: list - the results of the query        
+        '''
+        results = []
+
+        self.column_names = [description[0] for description in self.cursor.description]
+       
+        for col in self.column_names:
+            try:
+                query = f"SELECT * FROM {self.table_name} WHERE {col} LIKE '%" + text + "%'"
+                self.cursor.execute(query)
+                rows=self.cursor.fetchall()
+                results.append(rows)
+            except:
+                print("No results")
+        return results
+    
     def make_sql_file(self, output_file='your_data.sql'):
+        '''
+        Function: Creates a .sql file and saves it to the current directory
+        :param: Default file location for now
+        
+        '''
         
         self.cursor.execute("SELECT name FROM sqlite_master WHERE type='table';")
         tables = self.cursor.fetchall()
-        table_names = [table[0] for table in tables]
+        self.table_names = [table[0] for table in tables]
 
         with open(output_file, 'w') as file:
-            for table in table_names:
+            for table in self.table_names:
                 self.cursor.execute(f"SELECT sql FROM sqlite_master WHERE type='table' AND name='{table}'")
                 create_table_statement = self.cursor.fetchone()[0]
                 file.write(f"{create_table_statement};\n\n")
@@ -56,14 +81,14 @@ class DB:
                 self.cursor.execute(f"PRAGMA table_info({table})")
                 columns_info = self.cursor.fetchall()
                 column_names = [col[1] for col in columns_info]
-                column_list = ", ".join(column_names)
+                self.column_list = ", ".join(column_names)
 
                 self.cursor.execute(f"SELECT * FROM {table}")
                 rows = self.cursor.fetchall()
                 
                 for row in rows:
                     values_list = ", ".join([f"'{str(value)}'" if value is not None else 'NULL' for value in row])
-                    insert_statement = f"INSERT INTO {table} ({column_list}) VALUES ({values_list});\n"
+                    insert_statement = f"INSERT INTO {table} ({self.column_list}) VALUES ({values_list});\n"
                     file.write(insert_statement)
         
         print(f"Data has been exported to {output_file}")
@@ -89,7 +114,7 @@ class DB:
         '''
         connection_string = f'sqlite:///{self.db_file}'
         engine = create_engine(connection_string)
-        self.df.to_sql(self.table_name, con=engine, if_exists='replace', index=False)
+        self.df.to_sql(self.table_name, con=engine, if_exists='replace', index=True)
         print('Database creation successful!')
 
     def xml_to_sql(self) -> None:

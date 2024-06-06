@@ -24,6 +24,10 @@ class Controller(QMainWindow, Ui_MainWindow):
         super().__init__()
         self.setupUi(self)
         self.file = file
+        self.ui = show_ui
+        self.data = None
+        self.column_names = None
+        
 
         if browse:
             self.options = QFileDialog.Options()
@@ -31,21 +35,23 @@ class Controller(QMainWindow, Ui_MainWindow):
             filename, _ = QFileDialog.getOpenFileName(self, 'Browse File', "/home", "csv files(*.csv);;json Files(*.json);;xml files(*.xml);;excel files(*.xlsx);;Sql Files(*.sql))", options=self.options)
             if filename:
                 self.file =filename
+
         if self.file != None:  
-            print(f'self.db uses : {self.file}')
             self.db = DB(self.file)
         else:
             print('Program requires a file name\npython3 create_db.py <filename>\n-help or --help to display options')
             sys.exit(0)
-
+        
         if show_ui:
             self.show()
             self.setupTable()
+            self.lineEdit_search.textChanged.connect(lambda ev: self.search(ev,self.lineEdit_search.text()))
             self.displaySchema()
             self.print_readout()
         else:
             self.print_readout()
-            
+
+   
     def print_readout(self) -> None:
         '''
         Function: print readout of the schema in the command line in colored format
@@ -74,7 +80,8 @@ class Controller(QMainWindow, Ui_MainWindow):
             print(self.colored_text("\t".join(map(str, row)), type_color))
 
         self.db.make_sql_file()
-        sys.exit(0)
+        if not self.ui:
+            sys.exit(0)
 
     def colored_text(self, text, color_code) -> str:
         '''
@@ -111,18 +118,51 @@ class Controller(QMainWindow, Ui_MainWindow):
         Function: retrieves data from the database and displays it in the tablewidget for the user interface        
         '''
 
-        data = self.db.read_db()
-        column_names = [description[0] for description in self.db.cursor.description]
+        self.data = self.db.read_db()
+        self.column_names = [description[0] for description in self.db.cursor.description]
         
-        self.tableWidget.setColumnCount(len(column_names))
-        self.tableWidget.setHorizontalHeaderLabels(column_names)
-        self.tableWidget.setRowCount(len(data))
+        self.tableWidget.setColumnCount(len(self.column_names))
+        self.tableWidget.setHorizontalHeaderLabels(self.column_names)
+        self.tableWidget.setRowCount(len(self.data))
         
-        for row_index, row_data in enumerate(data):
+        for row_index, row_data in enumerate(self.data):
             for col_index, col_data in enumerate(row_data):
                 self.tableWidget.setItem(row_index, col_index, QTableWidgetItem(str(col_data)))
         
         
+    def search(self, event, text):
+        '''
+        Function: filter results in the tableWidget as your typing
+        :param: text - text of the lineEdit
+        
+        '''
+        text = text.strip()
+        if text == "":
+            self.tableWidget.clearContents()
+            self.tableWidget.setRowCount(0)
+            self.setupTable()
+            return
+        rows = self.db.searchdb(text)
+        
+        self.tableWidget.clearContents()
+        self.tableWidget.setRowCount(0)
+
+        flattened_rows = [item for sublist in rows if sublist for item in sublist]
+
+        seen_rows = set()
+        unique_rows = []
+        for row in flattened_rows:
+            if row not in seen_rows:
+                unique_rows.append(row)
+                seen_rows.add(row)
+
+        if unique_rows:
+            self.tableWidget.setRowCount(len(unique_rows))
+
+            for row_index, row_data in enumerate(unique_rows):
+                for col_index, col_data in enumerate(row_data):
+                    self.tableWidget.setItem(row_index, col_index, QTableWidgetItem(str(col_data)))
+
 
         
         
