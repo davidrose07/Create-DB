@@ -58,7 +58,7 @@ class DB:
                 rows=self.cursor.fetchall()
                 results.append(rows)
             except:
-                print("No results")
+                pass
         return results
     
     def make_sql_file(self, output_file='your_data.sql'):
