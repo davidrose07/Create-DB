@@ -5,7 +5,11 @@ from PyQt5.QtWidgets import QFileDialog
 from view import Ui_MainWindow
 from PyQt5.QtWidgets import QMainWindow, QTableWidgetItem
 from db import DB
+from db_manager import DBManager
 import sys
+from colorama import init, Fore, Style
+
+init(autoreset=True)
 
 QtCore.QCoreApplication.setAttribute(QtCore.Qt.AA_EnableHighDpiScaling, True)
 QtCore.QCoreApplication.setAttribute(QtCore.Qt.AA_UseHighDpiPixmaps, True)
@@ -27,7 +31,10 @@ class Controller(QMainWindow, Ui_MainWindow):
         self.ui = show_ui
         self.data = None
         self.column_names = None
-        
+
+        self.table_color = Fore.BLUE
+        self.column_color = Fore.GREEN
+        self.type_color = Fore.YELLOW
 
         if browse:
             self.options = QFileDialog.Options()
@@ -51,39 +58,46 @@ class Controller(QMainWindow, Ui_MainWindow):
         else:
             self.print_readout()
 
-   
+    def colored_text(self, text, color):
+        return f"{color}{text}{Style.RESET_ALL}"
+    
     def print_readout(self) -> None:
         '''
         Function: print readout of the schema in the command line in colored format
         
         '''
-        table_color = '34'  # Blue
-        column_color = '32'  # Green
-        type_color = '33'  # Yellow
-
+        
         schema_info = self.db.get_schema()
         for table,columns in schema_info.items():
-            print(self.colored_text(f'Table: {table}: schema', table_color))
+            print(self.colored_text(f'Table: {table}: schema', self.table_color))
             for column in columns:
-                column_name = self.colored_text(f'\tColumn: {column[0]:<20}', column_color)
-                column_type = self.colored_text(f'\tType: {column[1]:<20}',type_color)
+                column_name = self.colored_text(f'\tColumn: {column[0]:<20}', self.column_color)
+                column_type = self.colored_text(f'\tType: {column[1]:<20}',self.type_color)
                 print(f'{column_name}{column_type}')
 
         data = self.db.read_db()
-        column_names = [self.colored_text(description[0], column_color) for description in self.db.cursor.description]
-
-        print(f'\n\n')
-        print(self.colored_text('*' * 56, table_color))
-        print("\t".join(column_names))
-
-        for row in data:
-            print(self.colored_text("\t".join(map(str, row)), type_color))
+        #column_names = [self.colored_text(description[0], self.column_color) for description in self.db.cursor.description]
+        column_names = [description[0] for description in self.db.cursor.description]
 
         self.db.make_sql_file()
-        if not self.ui:
-            sys.exit(0)
 
-    def colored_text(self, text, color_code) -> str:
+        if not self.ui:
+            """ print(f'\n\n')
+            print(self.colored_text('*' * 56, self.table_color))
+            print("\t".join(column_names))
+
+            for row in data:
+                print(self.colored_text("\t".join(map(str, row)), self.type_color)) """
+            db_manager= DBManager(data, column_names)
+            db_manager.run()
+
+        
+        sys.exit(0)
+        
+            
+
+
+    """ def colored_text(self, text, color_code) -> str:
         '''
         Function: returns a colored formated text
         :param: text - the text to color
@@ -92,7 +106,7 @@ class Controller(QMainWindow, Ui_MainWindow):
         '''
 
         formatted_text = f"\033[{color_code}m{text}\033[0m"
-        return formatted_text
+        return formatted_text """
 
     def displaySchema(self) -> None:
         '''
