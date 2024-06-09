@@ -10,6 +10,7 @@ create_db.sh: Shell script for command-line usage.
 controller.py: Manages the core functionality.
 db.py: Handles database interactions.
 view.py: Manages the GUI components.
+db_manager.py:  Handles CLI search options
 
 # TODO:
 test installer file on different distros
