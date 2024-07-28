@@ -13,7 +13,7 @@ class DB:
         Init Function: setup db connection and handle file to convert
         :param: file - file to convert 
         '''
-        self.db_file = 'data.db'
+        self.db_file = 'bible.db'
         self.df = None
         self.file = file
         self.file_path = self.determine_file_type()
@@ -116,13 +116,13 @@ class DB:
         engine = create_engine(connection_string)
         self.df.to_sql(self.table_name, con=engine, if_exists='replace', index=True)
         print('Database creation successful!')
-
+     
     def xml_to_sql(self) -> None:
         '''
         Function: convert a xml file to db
         '''
         try:
-            self.df = pd.read_xml(self.file)
+            self.df = pd.read_xml(self.file, parser='etree')
             self.make_table()
         except Exception as e:
             print(f'Exception in xml_to_sql: {e}')
@@ -219,7 +219,7 @@ class DB:
         Function: Query all items from the db and return results
         :return: list
         '''
-        self.con = sqlite3.connect('data.db')
+        self.con = sqlite3.connect(self.db_file)
         self.cursor = self.con.cursor()
         self.cursor.execute(f'SELECT * FROM {self.table_name}')
         rows = self.cursor.fetchall()
